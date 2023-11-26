@@ -1,6 +1,6 @@
 package com.fast.campus.simplesns.configuration.filter;
 
-import org.apache.catalina.User;
+import com.fast.campus.simplesns.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +27,7 @@ public class RedisConfiguration {
     }
 
     @Bean
-    public RedisTemplate<String, User> redisTemplate() {
+    public RedisTemplate<String, User> userRedisTemplate() {
         RedisTemplate<String, User> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());

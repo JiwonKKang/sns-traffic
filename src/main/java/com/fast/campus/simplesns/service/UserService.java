@@ -1,5 +1,6 @@
 package com.fast.campus.simplesns.service;
 
+import com.fast.campus.simplesns.repository.UserCacheRepository;
 import com.fast.campus.simplesns.util.JwtTokenUtils;
 import com.fast.campus.simplesns.exception.ErrorCode;
 import com.fast.campus.simplesns.exception.SimpleSnsApplicationException;
@@ -24,6 +25,7 @@ public class UserService implements UserDetailsService {
     private final UserEntityRepository userRepository;
     private final BCryptPasswordEncoder encoder;
     private final AlarmEntityRepository alarmEntityRepository;
+    private final UserCacheRepository userCacheRepository;
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -34,13 +36,17 @@ public class UserService implements UserDetailsService {
 
     @Override
     public User loadUserByUsername(String userName) throws UsernameNotFoundException {
-        return userRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(
+        return userCacheRepository.getUser(userName).orElseGet(() ->
+                userRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(
                 () -> new SimpleSnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("userName is %s", userName))
-        );
+        ));
+
     }
 
     public String login(String userName, String password) {
         User savedUser = loadUserByUsername(userName);
+
+        userCacheRepository.setUser(savedUser);
         if (!encoder.matches(password, savedUser.getPassword())) {
             throw new SimpleSnsApplicationException(ErrorCode.INVALID_PASSWORD);
         }
