@@ -1,6 +1,6 @@
 package com.fast.campus.simplesns.configuration.filter;
 
-import com.fast.campus.simplesns.JwtTokenUtils;
+import com.fast.campus.simplesns.util.JwtTokenUtils;
 import com.fast.campus.simplesns.model.User;
 import com.fast.campus.simplesns.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (!header.startsWith("Bearer ")) {
+        if (header == null || !header.startsWith("Bearer ")) {
             log.warn("Authorization Header does not start with Bearer");
             chain.doFilter(request, response);
             return;

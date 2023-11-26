@@ -33,7 +33,7 @@ public class AuthenticationConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring()
                 .antMatchers("/", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg",
                         "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/manifest.json")

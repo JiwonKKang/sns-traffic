@@ -13,6 +13,8 @@ public enum ErrorCode {
     DUPLICATED_USER_NAME(HttpStatus.CONFLICT, "Duplicated user name"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Token is invalid"),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post not founded"),
+    ALREADY_LIKED_POST(HttpStatus.CONFLICT, "user already like the post"),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "internal server error"),
     INVALID_PERMISSION(HttpStatus.UNAUTHORIZED, "Permission is invalid");
 
     private final HttpStatus status;

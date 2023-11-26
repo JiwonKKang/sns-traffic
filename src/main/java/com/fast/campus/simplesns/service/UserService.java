@@ -1,13 +1,17 @@
 package com.fast.campus.simplesns.service;
 
-import com.fast.campus.simplesns.JwtTokenUtils;
+import com.fast.campus.simplesns.util.JwtTokenUtils;
 import com.fast.campus.simplesns.exception.ErrorCode;
 import com.fast.campus.simplesns.exception.SimpleSnsApplicationException;
+import com.fast.campus.simplesns.model.Alarm;
 import com.fast.campus.simplesns.model.User;
 import com.fast.campus.simplesns.model.entity.UserEntity;
+import com.fast.campus.simplesns.repository.AlarmEntityRepository;
 import com.fast.campus.simplesns.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +23,7 @@ public class UserService implements UserDetailsService {
 
     private final UserEntityRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+    private final AlarmEntityRepository alarmEntityRepository;
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -51,5 +56,10 @@ public class UserService implements UserDetailsService {
 
         UserEntity savedUser = userRepository.save(UserEntity.of(userName, encoder.encode(password)));
         return User.fromEntity(savedUser);
+    }
+
+    public Page<Alarm> alarmList(Integer userId, Pageable pageable) {
+
+        return alarmEntityRepository.findAllByUserId(userId, pageable).map(Alarm::fromEntity);
     }
 }

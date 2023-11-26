@@ -1,4 +1,4 @@
-package com.fast.campus.simplesns;
+package com.fast.campus.simplesns.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

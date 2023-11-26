@@ -3,11 +3,18 @@ package com.fast.campus.simplesns.controller;
 
 import com.fast.campus.simplesns.controller.request.UserJoinRequest;
 import com.fast.campus.simplesns.controller.request.UserLoginRequest;
+import com.fast.campus.simplesns.controller.response.AlarmResponse;
 import com.fast.campus.simplesns.controller.response.Response;
 import com.fast.campus.simplesns.controller.response.UserJoinResponse;
 import com.fast.campus.simplesns.controller.response.UserLoginResponse;
+import com.fast.campus.simplesns.exception.ErrorCode;
+import com.fast.campus.simplesns.exception.SimpleSnsApplicationException;
+import com.fast.campus.simplesns.model.User;
 import com.fast.campus.simplesns.service.UserService;
+import com.fast.campus.simplesns.util.ClassUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,4 +41,10 @@ public class UserController {
         return Response.success(UserJoinResponse.fromUser(userService.loadUserByUsername(authentication.getName())));
     }
 
+    @GetMapping("/alarm")
+    public Response<Page<AlarmResponse>> alarm(Authentication authentication, Pageable pageable) {
+        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class)
+                .orElseThrow(() -> new SimpleSnsApplicationException(ErrorCode.INTERNAL_SERVER_ERROR));
+        return Response.success(userService.alarmList(user.getId(), pageable).map(AlarmResponse::fromAlarm));
+    }
 }
