@@ -30,13 +30,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain chain)
             throws ServletException, IOException {
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+
         if (!header.startsWith("Bearer ")) {
             log.warn("Authorization Header does not start with Bearer");
             chain.doFilter(request, response);
             return;
         }
-
         final String token = header.split(" ")[1].trim();
         User userDetails = userService.loadUserByUsername(JwtTokenUtils.getUsername(token, secretKey));
 

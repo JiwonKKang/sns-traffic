@@ -56,7 +56,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function Feed() {
+function MyPosts() {
   const [page, setPage] = useState(0);
   const [render, setRender] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -69,10 +69,37 @@ function Feed() {
   const [dialogMessage, setDialogMessage] = React.useState('');
   const navigate = useNavigate();
 
+  const handleModify = (post) => {
+    console.log('handleModify');
+    console.log(post);
+    navigate('/modify-post', { state: post });
+  };
+
   const handleDetail = (post) => {
     console.log('handleDetail');
     console.log(post);
     navigate('/post-detail', { state: post });
+  };
+
+  const handleDelete = (id) => {
+    console.log('handleDelete ' + id);
+    axios({
+      url: '/api/v1/posts/' + id,
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    })
+      .then((res) => {
+        console.log('success');
+        console.log(res);
+        console.log(page);
+        handleGetPosts(page);
+      })
+      .catch((error) => {
+        console.log(error);
+        navigate('/authentication/sign-in');
+      });
   };
 
   const handleClickOpen = () => {
@@ -84,9 +111,7 @@ function Feed() {
   };
 
   const changePage = (pageNum) => {
-    console.log('change pages');
-    console.log(pageNum);
-    console.log(page);
+    console.log('changePage');
     setPage(pageNum);
     handleGetPosts(pageNum);
   };
@@ -94,7 +119,7 @@ function Feed() {
   const handleGetPosts = (pageNum, event) => {
     console.log('handleGetPosts');
     axios({
-      url: '/api/v1/posts?size=5&sort=id&page=' + pageNum,
+      url: '/api/v1/posts/my?size=5&sort=id&page=' + pageNum,
       method: 'GET',
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -113,7 +138,7 @@ function Feed() {
   };
 
   useEffect(() => {
-    handleGetPosts();
+    handleGetPosts(0);
   }, []);
 
   return (
@@ -137,9 +162,15 @@ function Feed() {
                 </Grid>
                 <MDTypography variant="body2">{post.body}</MDTypography>
                 <Grid container>
-                  <Grid item xs={11}></Grid>
+                  <Grid item xs={9}></Grid>
                   <Grid item xs={1}>
                     <Button onClick={() => handleDetail(post)}>Detail</Button>
+                  </Grid>
+                  <Grid item xs={1}>
+                    <Button onClick={() => handleModify(post)}>Modify</Button>
+                  </Grid>
+                  <Grid item xs={1}>
+                    <Button onClick={() => handleDelete(post.id)}>Delete</Button>
                   </Grid>
                 </Grid>
               </MDBox>
@@ -183,4 +214,4 @@ function Feed() {
   );
 }
 
-export default Feed;
+export default MyPosts;

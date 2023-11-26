@@ -5,12 +5,15 @@ spring.datasource:
   password:
   driver-class-name: org.postgresql.Driver
 
-spring.jpa:
-  database: postgresql
-  hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-  hibernate.ddl-auto: create
-  properties.hibernate.format_sql: true
-  show-sql: true
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    database: postgresql
 
 jwt:
   secret-key: fast-campus.simple_sns_2022_secret_key
