@@ -26,6 +26,7 @@ public class PostService {
     private final LikeEntityRepository likeEntityRepository;
     private final CommentEntityRepository commentEntityRepository;
     private final AlarmEntityRepository alarmEntityRepository;
+    private final AlarmService alarmService;
 
     public void create(String title, String body, String userName) {
 
@@ -79,7 +80,8 @@ public class PostService {
         commentEntityRepository.save(CommentEntity.of(comment, postEntity, userEntity));
 
         // create alarm
-        alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_COMMENT_ON_POST, new AlarmArgs(userEntity.getId(), postId)));
+        AlarmEntity alarm = alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_COMMENT_ON_POST, new AlarmArgs(userEntity.getId(), postId)));
+        alarmService.send(postEntity.getUser().getId(), alarm.getId());
     }
 
     public Page<Comment> getComments(Integer postId, Pageable pageable) {
@@ -100,7 +102,8 @@ public class PostService {
         likeEntityRepository.save(LikeEntity.of(postEntity, userEntity));
 
         // create alarm
-        alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_LIKE_ON_POST, new AlarmArgs(userEntity.getId(), postId)));
+        AlarmEntity alarm = alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_LIKE_ON_POST, new AlarmArgs(userEntity.getId(), postId)));
+        alarmService.send(postEntity.getUser().getId(), alarm.getId());
 
     }
 
