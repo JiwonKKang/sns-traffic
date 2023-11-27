@@ -36,7 +36,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String token;
 
-
         if (TOKEN_IN_PARAM_URLS.contains(request.getRequestURI())) {
             log.info("Request with {} check query param", request.getRequestURI());
             token = request.getQueryString().split("=")[1].trim();

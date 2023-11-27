@@ -2,11 +2,9 @@ package com.fast.campus.simplesns.service;
 
 import com.fast.campus.simplesns.exception.ErrorCode;
 import com.fast.campus.simplesns.exception.SimpleSnsApplicationException;
-import com.fast.campus.simplesns.model.AlarmArgs;
-import com.fast.campus.simplesns.model.AlarmType;
-import com.fast.campus.simplesns.model.Comment;
-import com.fast.campus.simplesns.model.Post;
+import com.fast.campus.simplesns.model.*;
 import com.fast.campus.simplesns.model.entity.*;
+import com.fast.campus.simplesns.producer.AlarmProducer;
 import com.fast.campus.simplesns.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +24,7 @@ public class PostService {
     private final LikeEntityRepository likeEntityRepository;
     private final CommentEntityRepository commentEntityRepository;
     private final AlarmEntityRepository alarmEntityRepository;
-    private final AlarmService alarmService;
+    private final AlarmProducer alarmProducer;
 
     public void create(String title, String body, String userName) {
 
@@ -80,8 +78,7 @@ public class PostService {
         commentEntityRepository.save(CommentEntity.of(comment, postEntity, userEntity));
 
         // create alarm
-        AlarmEntity alarm = alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_COMMENT_ON_POST, new AlarmArgs(userEntity.getId(), postId)));
-        alarmService.send(postEntity.getUser().getId(), alarm.getId());
+        alarmProducer.send(AlarmEvent.of(postEntity.getUser().getId(), AlarmArgs.of(userEntity.getId(), postId), AlarmType.NEW_COMMENT_ON_POST));
     }
 
     public Page<Comment> getComments(Integer postId, Pageable pageable) {
@@ -102,8 +99,7 @@ public class PostService {
         likeEntityRepository.save(LikeEntity.of(postEntity, userEntity));
 
         // create alarm
-        AlarmEntity alarm = alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_LIKE_ON_POST, new AlarmArgs(userEntity.getId(), postId)));
-        alarmService.send(postEntity.getUser().getId(), alarm.getId());
+        alarmProducer.send(AlarmEvent.of(postEntity.getUser().getId(), AlarmArgs.of(userEntity.getId(), postId), AlarmType.NEW_LIKE_ON_POST));
 
     }
 
